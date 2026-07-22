@@ -1,0 +1,30 @@
+services:
+  moodle:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "80:80"
+    volumes:
+      - ./moodle:/var/www/html          # Moodle 原始碼（外掛直接丟這裡）
+      - moodledata:/var/www/moodledata   # 使用者上傳/快取（放 webroot 外）
+
+  db:
+    image: mariadb:11                     # 多架構，arm64 原生
+    restart: unless-stopped
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --innodb-file-per-table=1
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASS}
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASS}
+    volumes:
+      - dbdata:/var/lib/mysql
+
+volumes:
+  moodledata:
+  dbdata:

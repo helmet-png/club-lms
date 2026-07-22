@@ -1,0 +1,26 @@
+# Render Blueprint（可選）：也可以直接在 Render 後臺點 New → Web Service 手動建
+services:
+  - type: web
+    name: club-lms-experiment
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: MOODLE_DB_HOST      # Supabase「Session pooler」主機 aws-0-xxx.pooler.supabase.com
+        sync: false
+      - key: MOODLE_DB_PORT
+        value: "5432"
+      - key: MOODLE_DB_NAME
+        value: postgres
+      - key: MOODLE_DB_USER      # postgres.<你的專案ref>
+        sync: false
+      - key: MOODLE_DB_PASS      # Supabase 專案的資料庫密碼
+        sync: false
+      - key: MOODLE_WWWROOT      # https://<你的服務名>.onrender.com
+        sync: false
+      - key: MOODLE_ADMIN_PASS   # 自訂管理員密碼（英數+符號）
+        sync: false
+      - key: MOODLE_ADMIN_EMAIL
+        sync: false
+      - key: MOODLE_CRON_PASS    # 自訂一組字串，外部 cron 會用
+        sync: false
