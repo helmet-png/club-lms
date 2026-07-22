@@ -35,21 +35,28 @@ PHP
 mkdir -p /var/www/moodledata
 chown -R www-data:www-data /var/www/moodledata /var/www/html
 
-# 若尚未安裝，於「背景」安裝，避免擋住 Apache 開 port（Render 會逾時砍容器）
-if [ "$(php /usr/local/bin/check-installed.php 2>/dev/null)" != "yes" ]; then
-  echo ">> 資料庫尚未安裝，背景開始安裝 Moodle（首次數分鐘，請耐心）..."
-  (
+# 背景初始化：需要就安裝 DB；每次開機補中文語言包（moodledata 短暫，重啟會掉回英文）
+# 全部丟背景，讓 Apache 立刻開 port，避免 Render 逾時砍容器
+(
+  if [ "$(php /usr/local/bin/check-installed.php 2>/dev/null)" != "yes" ]; then
+    echo ">> 背景開始安裝 Moodle（首次數分鐘，請耐心）..."
     php /var/www/html/admin/cli/install_database.php \
         --lang=zh_tw --adminuser=admin \
         --adminpass="$(printenv MOODLE_ADMIN_PASS)" \
         --adminemail="$(printenv MOODLE_ADMIN_EMAIL)" \
         --fullname="社團學習平臺(實驗)" --shortname="ClubLMS" \
         --agree-license \
-      && echo ">> ✅ Moodle 安裝完成，重新整理網頁即可登入" \
-      || echo ">> ⚠️ 安裝程序結束（可能已安裝或發生錯誤，看上方訊息）"
-  ) &
-else
-  echo ">> 資料庫已安裝，直接啟動"
-fi
+      || echo ">> ⚠️ 安裝程序結束（可能已安裝或發生錯誤）"
+  else
+    echo ">> 資料庫已安裝，跳過安裝"
+  fi
+
+  echo ">> 補中文語言包 (zh_tw)..."
+  php /var/www/html/admin/cli/install_langpack.php --lang=zh_tw 2>/dev/null \
+    || php /var/www/html/admin/cli/install_langpack.php zh_tw 2>/dev/null \
+    || echo ">> ⚠️ 中文語言包安裝略過"
+  php /var/www/html/admin/cli/purge_caches.php 2>/dev/null || true
+  echo ">> ✅ 背景初始化完成，重新整理網頁即可"
+) &
 
 exec apache2-foreground
