@@ -23,6 +23,7 @@ ARG MOODLE_BRANCH=MOODLE_405_STABLE
 RUN git clone --branch ${MOODLE_BRANCH} --depth 1 \
       https://github.com/moodle/moodle.git /var/www/html
 
+COPY check-installed.php /usr/local/bin/check-installed.php
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 

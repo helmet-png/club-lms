@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 每次開機：重建 config.php（檔案系統短暫）、必要時建表、啟動 Apache
+# 每次開機：重建 config.php、Apache 立刻開 port，DB 安裝丟背景跑（首次數分鐘）
 set -e
 
 export PGSSLMODE=require                 # Supabase 強制 SSL
@@ -34,12 +34,21 @@ PHP
 mkdir -p /var/www/moodledata
 chown -R www-data:www-data /var/www/moodledata /var/www/html
 
-# 首次部署自動建表；已安裝則略過（install_database 會自己拒絕）
-php /var/www/html/admin/cli/install_database.php \
-    --lang=zh_tw --adminuser=admin \
-    --adminpass="$(printenv MOODLE_ADMIN_PASS)" \
-    --adminemail="$(printenv MOODLE_ADMIN_EMAIL)" \
-    --fullname="社團學習平臺(實驗)" --shortname="ClubLMS" \
-    --agree-license 2>/dev/null || echo ">> DB 已安裝或略過，繼續啟動"
+# 若尚未安裝，於「背景」安裝，避免擋住 Apache 開 port（Render 會逾時砍容器）
+if [ "$(php /usr/local/bin/check-installed.php 2>/dev/null)" != "yes" ]; then
+  echo ">> 資料庫尚未安裝，背景開始安裝 Moodle（首次數分鐘，請耐心）..."
+  (
+    php /var/www/html/admin/cli/install_database.php \
+        --lang=zh_tw --adminuser=admin \
+        --adminpass="$(printenv MOODLE_ADMIN_PASS)" \
+        --adminemail="$(printenv MOODLE_ADMIN_EMAIL)" \
+        --fullname="社團學習平臺(實驗)" --shortname="ClubLMS" \
+        --agree-license \
+      && echo ">> ✅ Moodle 安裝完成，重新整理網頁即可登入" \
+      || echo ">> ⚠️ 安裝程序結束（可能已安裝或發生錯誤，看上方訊息）"
+  ) &
+else
+  echo ">> 資料庫已安裝，直接啟動"
+fi
 
 exec apache2-foreground
