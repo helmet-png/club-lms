@@ -52,9 +52,21 @@ chown -R www-data:www-data /var/www/moodledata /var/www/html
   fi
 
   echo ">> 補中文語言包 (zh_tw)..."
-  php /var/www/html/admin/cli/install_langpack.php --lang=zh_tw 2>/dev/null \
-    || php /var/www/html/admin/cli/install_langpack.php zh_tw 2>/dev/null \
-    || echo ">> ⚠️ 中文語言包安裝略過"
+  # install_langpack.php 這版行不通，改直接抓官方語言包 zip 解壓到 moodledata/lang
+  # 網址版本號 4.5 對應 MOODLE_405_STABLE；換分支要一起改
+  if [ ! -f /var/www/moodledata/lang/zh_tw/langconfig.php ]; then
+    mkdir -p /var/www/moodledata/lang
+    if curl -fsSL --max-time 60 -o /tmp/zh_tw.zip \
+         "https://download.moodle.org/download.php/direct/langpack/4.5/zh_tw.zip"; then
+      unzip -o -q /tmp/zh_tw.zip -d /var/www/moodledata/lang && rm -f /tmp/zh_tw.zip
+      chown -R www-data:www-data /var/www/moodledata/lang
+      echo ">> ✅ 中文語言包已安裝"
+    else
+      echo ">> ⚠️ 中文語言包下載失敗"
+    fi
+  else
+    echo ">> 中文語言包已存在"
+  fi
   php /var/www/html/admin/cli/purge_caches.php 2>/dev/null || true
   echo ">> ✅ 背景初始化完成，重新整理網頁即可"
 ) &

@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       libpng-dev libjpeg-dev libfreetype6-dev \
       libicu-dev libzip-dev libxml2-dev libxslt-dev \
       libonig-dev libsodium-dev libpq-dev \
-      git unzip \
+      git unzip curl \
  && rm -rf /var/lib/apt/lists/*
 
 # Moodle 需要的 PHP 擴充（注意：pgsql 而非 mysqli）
