@@ -23,6 +23,7 @@ unset(\$CFG); global \$CFG; \$CFG = new stdClass();
 \$CFG->prefix    = 'mdl_';
 \$CFG->dboptions = array('dbpersist'=>0, 'dbsocket'=>0);
 \$CFG->wwwroot   = getenv('MOODLE_WWWROOT');
+\$CFG->sslproxy  = true;                  // Render 在前面處理 HTTPS，轉進來是 http → 否則會無限轉址
 \$CFG->dataroot  = '/var/www/moodledata';
 \$CFG->admin     = 'admin';
 \$CFG->directorypermissions = 02777;
