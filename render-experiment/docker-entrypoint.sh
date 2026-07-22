@@ -51,6 +51,11 @@ chown -R www-data:www-data /var/www/moodledata /var/www/html
     echo ">> 資料庫已安裝，跳過安裝"
   fi
 
+  # 註冊新/變更的外掛(例如 local_clubws)，讓它的 web service 函式可用
+  echo ">> 檢查外掛升級 (註冊 local_clubws 等)..."
+  php /var/www/html/admin/cli/upgrade.php --non-interactive 2>/dev/null \
+    || echo ">> 無待升級或略過"
+
   echo ">> 補中文語言包 (zh_tw)..."
   # install_langpack.php 這版行不通，改直接抓官方語言包 zip 解壓到 moodledata/lang
   # 網址版本號 4.5 對應 MOODLE_405_STABLE；換分支要一起改
