@@ -29,8 +29,6 @@ unset(\$CFG); global \$CFG; \$CFG = new stdClass();
 \$CFG->directorypermissions = 02777;
 \$CFG->dbsessions = true;                 // session 存進 DB → 重啟不掉登入
 \$CFG->cronremotepassword = getenv('MOODLE_CRON_PASS');
-\$CFG->debug = 32767;        // TEMP 除錯：讓 web service 回傳詳細 SQL 錯誤，修好後移除
-\$CFG->debugdisplay = 1;     // TEMP
 require_once(__DIR__.'/lib/setup.php');
 PHP
 
