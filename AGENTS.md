@@ -77,6 +77,13 @@ items[N][intro]            string, optional
 items[N][availablefrom]    int, optional — unix timestamp
 ```
 
+### `local_clubws_clear_restrictions`
+Removes ALL date/availability restrictions from every activity in the given course(s) — makes everything open immediately, no unlock date.
+
+```
+courseids[N]   int, required — course id (repeat for multiple courses)
+```
+
 Example call creating one URL activity:
 ```bash
 curl -s "$BASE" \

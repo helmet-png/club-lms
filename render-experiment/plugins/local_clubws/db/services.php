@@ -18,4 +18,12 @@ $functions = [
         'capabilities' => 'moodle/course:manageactivities',
         'ajax'         => false,
     ],
+    'local_clubws_clear_restrictions' => [
+        'classname'    => 'local_clubws\external',
+        'methodname'   => 'clear_restrictions',
+        'description'  => 'Remove all date/availability restrictions from every activity in given courses.',
+        'type'         => 'write',
+        'capabilities' => 'moodle/course:manageactivities',
+        'ajax'         => false,
+    ],
 ];

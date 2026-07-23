@@ -265,4 +265,47 @@ class external extends external_api {
             ])
         );
     }
+
+    // ---------------------------------------------------------------------
+    // 清除課程內所有活動的「日期限制」，改為隨時可開放
+    // ---------------------------------------------------------------------
+
+    public static function clear_restrictions_parameters() {
+        return new external_function_parameters([
+            'courseids' => new external_multiple_structure(
+                new external_value(PARAM_INT, '課程 id')
+            ),
+        ]);
+    }
+
+    public static function clear_restrictions($courseids) {
+        global $DB, $CFG;
+        require_once($CFG->libdir . '/modinfolib.php');
+
+        $params = self::validate_parameters(self::clear_restrictions_parameters(), ['courseids' => $courseids]);
+
+        $cleared = 0;
+        foreach ($params['courseids'] as $courseid) {
+            $context = \context_course::instance($courseid);
+            self::validate_context($context);
+            require_capability('moodle/course:manageactivities', $context);
+
+            $cms = $DB->get_records('course_modules', ['course' => $courseid], '', 'id, availability');
+            foreach ($cms as $cm) {
+                if ($cm->availability !== null) {
+                    $DB->set_field('course_modules', 'availability', null, ['id' => $cm->id]);
+                    $cleared++;
+                }
+            }
+            rebuild_course_cache($courseid, true);
+        }
+
+        return ['cleared' => $cleared];
+    }
+
+    public static function clear_restrictions_returns() {
+        return new external_single_structure([
+            'cleared' => new external_value(PARAM_INT, '被清除限制的活動數'),
+        ]);
+    }
 }
