@@ -10,4 +10,12 @@ $functions = [
         'capabilities' => 'moodle/course:manageactivities',
         'ajax'         => false,
     ],
+    'local_clubws_create_quizzes' => [
+        'classname'    => 'local_clubws\external',
+        'methodname'   => 'create_quizzes',
+        'description'  => 'Batch-create quizzes and import multiple-choice questions from GIFT.',
+        'type'         => 'write',
+        'capabilities' => 'moodle/course:manageactivities',
+        'ajax'         => false,
+    ],
 ];
