@@ -184,6 +184,9 @@ class external extends external_api {
             $mi->shuffleanswers = 1;
             $mi->questionsperpage = 1;
             $mi->navmethod = 'free';
+            $mi->quizpassword = '';       // mdl_quiz.password 為 NOT NULL，需給空字串
+            $mi->subnet = '';
+            $mi->browsersecurity = '-';
             $mi->sumgrades = 0;
             $mi->grade = 10;
             $mi->reviewattempt = $reviewattempt;
